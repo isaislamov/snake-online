@@ -10,6 +10,7 @@ const CENTER = WORLD / 2;
 const RADIUS = CENTER - 45;
 const SPEED = 125;
 const TICK_RATE = 30;
+const BOT_COUNT = 4;
 const players = new Map();
 const GAME_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const contentTypes = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.mp3': 'audio/mpeg' };
@@ -44,6 +45,33 @@ function spawnPoint() {
   return { x: CENTER + Math.cos(angle) * radius, y: CENTER + Math.sin(angle) * radius };
 }
 
+function createBot(index) {
+  const point = spawnPoint();
+  const angle = Math.random() * Math.PI * 2;
+  const id = `bot-${index}`;
+  players.set(id, {
+    id,
+    name: ['Змей Горыныч', 'Шустрый пельмень', 'Дядя Удав', 'Лютый огурец'][index],
+    color: randomColor(),
+    isBot: true,
+    x: point.x,
+    y: point.y,
+    angle,
+    targetAngle: angle,
+    score: 75 + Math.floor(Math.random() * 200),
+    boost: false,
+    alive: true,
+    trail: Array.from({ length: 110 }, (_, trailIndex) => ({
+      x: point.x - Math.cos(angle) * trailIndex * 4,
+      y: point.y - Math.sin(angle) * trailIndex * 4
+    })),
+    aiClock: 0,
+    lastSeen: Date.now()
+  });
+}
+
+for (let index = 0; index < BOT_COUNT; index++) createBot(index);
+
 function send(socket, message) {
   if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message));
 }
@@ -58,7 +86,8 @@ function publicPlayer(player) {
     angle: player.angle,
     score: player.score,
     boost: player.boost,
-    alive: player.alive
+    alive: player.alive,
+    isBot: Boolean(player.isBot)
   };
 }
 
@@ -92,6 +121,7 @@ sockets.on('connection', socket => {
         score: 0,
         boost: false,
         alive: true,
+        isBot: false,
         trail: Array.from({ length: 80 }, (_, index) => ({
           x: point.x - Math.cos(0) * index * 4,
           y: point.y - Math.sin(0) * index * 4
@@ -192,11 +222,25 @@ setInterval(() => {
   const dt = 1 / TICK_RATE;
   const now = Date.now();
   for (const [id, player] of players) {
-    if (now - player.lastSeen > 30_000) {
+    if (!player.isBot && now - player.lastSeen > 30_000) {
       players.delete(id);
       continue;
     }
-    if (!player.alive) continue;
+    if (!player.alive) {
+      if (player.isBot) createBot(Number(id.split('-')[1]));
+      continue;
+    }
+    if (player.isBot) {
+      player.aiClock -= dt;
+      if (player.aiClock <= 0) {
+        player.aiClock = .5 + Math.random() * 1.2;
+        const edgeDistance = Math.hypot(player.x - CENTER, player.y - CENTER);
+        player.targetAngle = edgeDistance > RADIUS - 500
+          ? Math.atan2(CENTER - player.y, CENTER - player.x)
+          : player.angle + (Math.random() - .5) * 1.5;
+        player.boost = Math.random() < .12 && player.score >= 5;
+      }
+    }
     turnTowards(player, player.targetAngle, 2.7 * dt);
     const speed = SPEED * (player.boost ? 2 : 1);
     const newX = player.x + Math.cos(player.angle) * speed * dt;
