@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>snake</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="lobby screen" id="lobby">
+    <div class="floating-orbs" id="floatingOrbs" aria-hidden="true"></div>
+    <section class="lobby-card">
+      <h1>snake</h1>
+      <input id="snakeName" maxlength="24" placeholder="Придумай погоняло своей анаконде" autocomplete="off">
+      <div class="color-row"><span>Цвет анаконды</span><input id="snakeColor" type="color" value="#35e76f"></div>
+      <button class="green-button" id="startButton" disabled>Let’s go</button>
+      <p class="best-score">Лучший результат: <strong id="bestScore">0</strong></p>
+    </section>
+  </main>
+
+  <main class="game screen hidden" id="game">
+    <canvas id="gameCanvas"></canvas>
+    <div class="minimap"><canvas id="miniCanvas" width="150" height="150"></canvas></div>
+    <div class="leaderboard panel"><h2>Лидеры</h2><ol id="leaderList"></ol><div id="playerPlace"></div></div>
+    <div class="score panel">Очки: <strong id="score">0</strong></div>
+    <div class="overlay hidden" id="pauseOverlay"><button class="green-button small-button" id="continueButton">continue</button></div>
+    <div class="overlay hidden" id="resultOverlay">
+      <div class="result-box"><strong id="resultScore">0 очков</strong><div class="result-actions"><button class="green-button" id="retryButton">try again</button><button class="purple-button" id="lobbyButton">lobby</button></div></div>
+    </div>
+  </main>
+
+  <audio id="eatSound" src="assets/yum-yum-yum.mp3" preload="auto"></audio>
+  <audio id="music" src="assets/background-music.mp3" preload="auto" loop></audio>
+  <script src="lobby.js"></script>
+</body>
+</html>
