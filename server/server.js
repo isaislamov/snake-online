@@ -139,8 +139,8 @@ sockets.on('connection', socket => {
       if (Number.isFinite(message.angle)) player.targetAngle = message.angle;
       player.boost = Boolean(message.boost) && player.score >= 5;
     }
-    if (message.type === 'score' && Number.isFinite(message.value)) {
-      player.score = Math.max(0, Math.min(1_000_000, message.value));
+    if (message.type === 'eat' && [10, 25, 50].includes(message.value)) {
+      player.score = Math.min(1_000_000, player.score + message.value);
     }
   });
 
