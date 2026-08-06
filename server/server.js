@@ -27,6 +27,7 @@ const server = http.createServer(async (request, response) => {
   try {
     const file = await readFile(filePath);
     response.setHeader('Content-Type', contentTypes[path.extname(filePath)] || 'application/octet-stream');
+    if (['.html', '.js', '.css'].includes(path.extname(filePath))) response.setHeader('Cache-Control', 'no-store, max-age=0');
     response.end(file);
   } catch {
     response.setHeader('Content-Type', 'application/json; charset=utf-8');
