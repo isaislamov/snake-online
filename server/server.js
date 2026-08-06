@@ -40,9 +40,13 @@ const cleanName = value => String(value || 'Анаконда').trim().slice(0, 2
 const cleanColor = value => /^#[0-9a-f]{6}$/i.test(value) ? value : randomColor();
 
 function spawnPoint() {
-  const angle = Math.random() * Math.PI * 2;
-  const radius = Math.sqrt(Math.random()) * (RADIUS - 350);
-  return { x: CENTER + Math.cos(angle) * radius, y: CENTER + Math.sin(angle) * radius };
+  for (let attempt = 0; attempt < 40; attempt++) {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = Math.sqrt(Math.random()) * (RADIUS - 350);
+    const point = { x: CENTER + Math.cos(angle) * radius, y: CENTER + Math.sin(angle) * radius };
+    if ([...players.values()].filter(player => player.alive).every(player => Math.hypot(player.x - point.x, player.y - point.y) > 420)) return point;
+  }
+  return { x: CENTER, y: CENTER };
 }
 
 function createBot(index) {
@@ -61,6 +65,7 @@ function createBot(index) {
     score: 75 + Math.floor(Math.random() * 200),
     boost: false,
     alive: true,
+    shieldUntil: Date.now() + 3000,
     trail: Array.from({ length: 110 }, (_, trailIndex) => ({
       x: point.x - Math.cos(angle) * trailIndex * 4,
       y: point.y - Math.sin(angle) * trailIndex * 4
@@ -122,6 +127,7 @@ sockets.on('connection', socket => {
         score: 0,
         boost: false,
         alive: true,
+        shieldUntil: Date.now() + 3000,
         isBot: false,
         skin: ['spider', 'batman', 'hulk', 'thor', 'gold'].includes(message.skin) ? message.skin : '',
         trail: Array.from({ length: 80 }, (_, index) => ({
@@ -174,7 +180,8 @@ function addTrail(player, newX, newY) {
 }
 
 function checkCollisions() {
-  const alive = [...players.values()].filter(player => player.alive);
+  const collisionNow = Date.now();
+  const alive = [...players.values()].filter(player => player.alive && collisionNow >= (player.shieldUntil || 0));
   const cellSize = 70;
   const grid = new Map();
   const cellKey = (x, y) => `${Math.floor(x / cellSize)},${Math.floor(y / cellSize)}`;
