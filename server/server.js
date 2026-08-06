@@ -11,6 +11,7 @@ const RADIUS = CENTER - 45;
 const SPEED = 125;
 const TICK_RATE = 30;
 const BOT_COUNT = 4;
+const CLIENT_VERSION = 'masks-4';
 const players = new Map();
 const GAME_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const contentTypes = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.mp3': 'audio/mpeg' };
@@ -27,6 +28,7 @@ const server = http.createServer(async (request, response) => {
   try {
     const file = await readFile(filePath);
     response.setHeader('Content-Type', contentTypes[path.extname(filePath)] || 'application/octet-stream');
+    response.setHeader('X-Game-Version', CLIENT_VERSION);
     if (['.html', '.js', '.css'].includes(path.extname(filePath))) response.setHeader('Cache-Control', 'no-store, max-age=0');
     response.end(file);
   } catch {
