@@ -150,6 +150,7 @@ sockets.on('connection', socket => {
     if (message.type === 'eat' && [10, 25, 50].includes(message.value)) {
       player.score = Math.min(1_000_000, player.score + message.value);
     }
+    if (message.type === 'debugGrant') player.score = Math.min(1_000_000, player.score + 2000);
   });
 
   socket.on('close', () => {
