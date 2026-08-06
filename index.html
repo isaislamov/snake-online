@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>snake</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .shop-button{width:100%;margin-top:16px;border:2px solid #d7b82c;background:#fff1a2;color:#4c3600;box-shadow:0 5px 0 #8e7510;font-size:17px}.shop-modal{position:absolute;z-index:20;width:min(760px,calc(100vw - 24px));max-height:90vh;overflow:auto;padding:24px;border:1px solid rgba(255,255,255,.2);border-radius:26px;background:rgba(28,8,50,.96);box-shadow:0 30px 90px #160223;color:#fff}.shop-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.shop-head h2{margin:0;font-size:30px}.shop-head span{color:#d9c7e8}.shop-head button{padding:4px 12px;border:0;background:transparent;color:#fff;font-size:35px}.skin-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.skin-card{padding:14px 9px;border:2px solid rgba(255,255,255,.13);border-radius:18px;background:#31114e;text-align:center}.skin-card.selected{border-color:#45ed74;box-shadow:0 0 20px #45ed7455}.skin-preview{width:74px;height:74px;margin:0 auto 10px;border:5px solid rgba(255,255,255,.3);border-radius:50%;display:grid;place-items:center;font-size:34px}.skin-card h3{min-height:38px;margin:0 0 8px;font-size:14px}.skin-card button{width:100%;padding:9px 5px;border:0;border-radius:10px;background:#42dc6c;color:#092c15;font-size:12px;box-shadow:none}.skin-spider{background:linear-gradient(135deg,#e5252a 55%,#1454a3 55%)}.skin-batman{background:linear-gradient(135deg,#14151a 55%,#646873 55%)}.skin-hulk{background:linear-gradient(135deg,#4bbf43 55%,#6c2e94 55%)}.skin-thor{background:linear-gradient(135deg,#bac6d4 50%,#bf2637 50%)}.skin-gold{background:linear-gradient(135deg,#fff0a4,#d69200)}@media(max-width:700px){.skin-grid{grid-template-columns:repeat(2,1fr)}.shop-modal{padding:18px}}
+  </style>
 </head>
 <body>
   <main class="lobby screen" id="lobby">
@@ -14,7 +17,12 @@
       <input id="snakeName" maxlength="24" placeholder="Придумай погоняло своей анаконде" autocomplete="off">
       <div class="color-row"><span>Цвет анаконды</span><input id="snakeColor" type="color" value="#35e76f"></div>
       <button class="green-button" id="startButton" disabled>Let’s go</button>
+      <button class="shop-button" id="shopButton">💎 Магазин скинов</button>
       <p class="best-score">Лучший результат: <strong id="bestScore">0</strong></p>
+    </section>
+    <section class="shop-modal hidden" id="shopModal">
+      <div class="shop-head"><div><h2>Скины</h2><span>Баланс: 💎 <strong id="shopCrystals">0</strong></span></div><button id="closeShop" aria-label="Закрыть">×</button></div>
+      <div class="skin-grid" id="skinGrid"></div>
     </section>
   </main>
 

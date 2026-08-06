@@ -87,7 +87,8 @@ function publicPlayer(player) {
     score: player.score,
     boost: player.boost,
     alive: player.alive,
-    isBot: Boolean(player.isBot)
+    isBot: Boolean(player.isBot),
+    skin: player.skin || ''
   };
 }
 
@@ -122,6 +123,7 @@ sockets.on('connection', socket => {
         boost: false,
         alive: true,
         isBot: false,
+        skin: ['spider', 'batman', 'hulk', 'thor', 'gold'].includes(message.skin) ? message.skin : '',
         trail: Array.from({ length: 80 }, (_, index) => ({
           x: point.x - Math.cos(0) * index * 4,
           y: point.y - Math.sin(0) * index * 4
