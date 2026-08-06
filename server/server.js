@@ -179,8 +179,9 @@ function checkCollisions() {
 
   for (const owner of alive) {
     const segments = 3 + Math.floor(owner.score / 25);
-    for (let index = 1; index < segments; index++) {
-      const point = owner.trail[Math.min(owner.trail.length - 1, 8 + index * 9)];
+    const bodyEnd = Math.min(owner.trail.length - 1, 8 + segments * 9);
+    for (let index = 8; index <= bodyEnd; index += 4) {
+      const point = owner.trail[index];
       if (!point) continue;
       const key = cellKey(point.x, point.y);
       if (!grid.has(key)) grid.set(key, []);
@@ -194,9 +195,10 @@ function checkCollisions() {
     collision: for (let x = cellX - 1; x <= cellX + 1; x++) {
       for (let y = cellY - 1; y <= cellY + 1; y++) {
         for (const hit of grid.get(`${x},${y}`) || []) {
-          if (hit.owner !== player && Math.hypot(player.x - hit.point.x, player.y - hit.point.y) < 19) {
+          if (hit.owner !== player && Math.hypot(player.x - hit.point.x, player.y - hit.point.y) < 28) {
             player.alive = false;
             player.boost = false;
+            if (player.isBot) player.respawnAt = Date.now() + 5000;
             break collision;
           }
         }
@@ -208,11 +210,13 @@ function checkCollisions() {
     for (let second = first + 1; second < alive.length; second++) {
       const a = alive[first];
       const b = alive[second];
-      if (a.alive && b.alive && Math.hypot(a.x - b.x, a.y - b.y) < 24) {
+      if (a.alive && b.alive && Math.hypot(a.x - b.x, a.y - b.y) < 32) {
         a.alive = false;
         b.alive = false;
         a.boost = false;
         b.boost = false;
+        if (a.isBot) a.respawnAt = Date.now() + 5000;
+        if (b.isBot) b.respawnAt = Date.now() + 5000;
       }
     }
   }
@@ -227,7 +231,7 @@ setInterval(() => {
       continue;
     }
     if (!player.alive) {
-      if (player.isBot) createBot(Number(id.split('-')[1]));
+      if (player.isBot && now >= (player.respawnAt || 0)) createBot(Number(id.split('-')[1]));
       continue;
     }
     if (player.isBot) {
@@ -256,7 +260,10 @@ setInterval(() => {
     addTrail(player, newX, newY);
     player.x = newX;
     player.y = newY;
-    if (Math.hypot(player.x - CENTER, player.y - CENTER) > RADIUS - 20) player.alive = false;
+    if (Math.hypot(player.x - CENTER, player.y - CENTER) > RADIUS - 20) {
+      player.alive = false;
+      if (player.isBot) player.respawnAt = now + 5000;
+    }
   }
   checkCollisions();
   broadcast({ type: 'state', time: now, players: [...players.values()].map(publicPlayer) });
