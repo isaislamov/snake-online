@@ -241,6 +241,14 @@ setInterval(() => {
         player.boost = Math.random() < .12 && player.score >= 5;
       }
     }
+    if (player.boost) {
+      player.boostClock = (player.boostClock || 0) + dt;
+      while (player.boostClock >= .5) {
+        player.boostClock -= .5;
+        player.score = Math.max(0, player.score - 5);
+        if (player.score < 5) player.boost = false;
+      }
+    } else player.boostClock = 0;
     turnTowards(player, player.targetAngle, 2.7 * dt);
     const speed = SPEED * (player.boost ? 2 : 1);
     const newX = player.x + Math.cos(player.angle) * speed * dt;
