@@ -1,0 +1,12 @@
+[
+  {
+    "name": "apple-farm-0.1.0.jar",
+    "size": 33011,
+    "sha256": "6519f31fcef558e6cfdcd87a8297163434a80a0a42ba3e88044cb06b20fbf59d"
+  },
+  {
+    "name": "fabric-api-0.141.6+1.21.11.jar",
+    "size": 2426039,
+    "sha256": "bdff7fd7e220085cfad2ff9b1f40dde6534ae0b96cf378f97a374bc54cb9ed0f"
+  }
+]
